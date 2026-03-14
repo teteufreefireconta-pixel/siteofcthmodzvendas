@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso Programação</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f0f0f,#1a1a1a);color:white;overflow-x:hidden;}
+#loading{position:fixed;width:100%;height:100%;background:#0f0f0f;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;}
+.bar{width:260px;height:10px;background:#333;border-radius:10px;overflow:hidden;margin-top:15px;}
+.progress{height:100%;width:0%;background:#00ff88;border-radius:10px;}
+.menu{position:fixed;width:220px;height:100%;background:#111;padding-top:20px;}
+.menu button{display:block;width:100%;padding:15px;background:none;border:none;color:white;text-align:left;cursor:pointer;transition:0.2s;}
+.menu button:hover{background:#1a1a1a;}
+.content{margin-left:220px;padding:30px;}
+.section{display:none;}
+.active{display:block;}
+.box{background:#1a1a1a;padding:20px;border-radius:12px;max-width:700px;margin-bottom:20px;box-shadow:0 0 15px rgba(0,255,136,0.2);}
+.reviewCard,.formCard,.supportCard{background:#222;padding:12px;margin-bottom:12px;border-radius:10px;box-shadow:0 0 10px rgba(0,255,136,0.2);}
+.replyMsg{background:#333;padding:6px;margin-top:6px;border-radius:6px;}
+.replyBox{margin-top:8px;}
+.counter{color:#00ff88;}
+textarea,input,select{width:100%;padding:10px;margin-bottom:10px;border:none;border-radius:6px;background:#111;color:white;}
+button.sendBtn{background:#00ff88;color:#000;font-weight:bold;width:100%;padding:12px;border-radius:6px;border:none;cursor:pointer;margin-top:10px;transition:0.2s;}
+button.sendBtn:hover{opacity:0.8;}
+.star{font-size:22px;cursor:pointer;color:gray;transition:0.2s;}
+.star.sel{color:gold;}
+.check{display:inline-block;margin:5px 10px 5px 0;cursor:pointer;}
+.check span{display:inline-block;width:18px;height:18px;border:2px solid #00ff88;margin-right:5px;border-radius:4px;vertical-align:middle;}
+.check input{display:none;}
+.check input:checked + span{background:#00ff88;}
+.high{background:#ff4d4d;}
+.medium{background:#ffd633;color:#000;}
+.low{background:#3399ff;}
+#socialMenu{position:fixed;bottom:20px;right:20px;width:250px;z-index:999;}
+.notification{background:#1a1a1a;padding:12px 16px;border-radius:10px;margin-top:10px;opacity:0;transform:translateX(100%);transition:0.5s;box-shadow:0 0 10px rgba(0,255,136,0.3);}
+.notification.show{opacity:1;transform:translateX(0);}
+</style>
+</head>
+<body>
+
+<!-- Música de fundo -->
+<audio autoplay loop>
+  <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Loading -->
+<div id="loading">
+<h2>Carregando...</h2>
+<div class="bar"><div class="progress" id="progress"></div></div>
+<p id="percent">0%</p>
+</div>
+
+<!-- Menu -->
+<div class="menu">
+<button onclick="show('inicio')">Bem vindo</button>
+<button onclick="show('sobre')">Sobre</button>
+<button onclick="show('avaliacoes')">Avaliações</button>
+<button onclick="show('suporte')">Suporte</button>
+<button onclick="show('vendedor')">Seja um Vendedor</button>
+<button onclick="show('admin')">Painel</button>
+<button onclick="show('comprar')">Comprar</button>
+</div>
+
+<div class="content">
+
+<!-- Inicio -->
+<div id="inicio" class="section active">
+<div class="box"><h2>Bem vindo</h2><p>Aprenda programação de forma simples e divertida.</p></div>
+</div>
+
+<!-- Sobre -->
+<div id="sobre" class="section">
+<div class="box"><h2>Sobre</h2><p>Curso feito para iniciantes aprenderem programação de forma prática.</p></div>
+</div>
+
+<!-- Avaliações -->
+<div id="avaliacoes" class="section">
+<h2>Avaliações</h2>
+<div class="box">
+<input id="name" placeholder="Seu nome">
+<div>
+<span class="star" onclick="rate(1)">★</span>
+<span class="star" onclick="rate(2)">★</span>
+<span class="star" onclick="rate(3)">★</span>
+<span class="star" onclick="rate(4)">★</span>
+<span class="star" onclick="rate(5)">★</span>
+</div>
+<textarea id="comment" placeholder="Comentário"></textarea>
+<button onclick="addReview()" class="sendBtn">Enviar Avaliação</button>
+</div>
+<div id="reviews"></div>
+</div>
+
+<!-- Suporte -->
+<div id="suporte" class="section">
+<div class="box">
+<h2>Pedir Suporte</h2>
+<input id="supname" placeholder="Seu nome">
+<textarea id="supmsg" placeholder="Mensagem"></textarea>
+<select id="urgency">
+<option value="low">Não grave</option>
+<option value="medium">Média urgência</option>
+<option value="high">Urgente</option>
+</select>
+<button onclick="sendSupport()" class="sendBtn">Enviar Suporte</button>
+<div id="supportMessages"></div>
+</div>
+</div>
+
+<!-- Vendedor -->
+<div id="vendedor" class="section">
+<div class="box">
+<h2>Formulário Vendedor</h2>
+<input id="nomeV" placeholder="Nome">
+<input id="idade" placeholder="Idade">
+<input id="mod" placeholder="Nome do Mod">
+<p>Plataformas de Live</p>
+<label class="check"><input type="checkbox" value="TikTok" class="plat"><span></span>TikTok</label>
+<label class="check"><input type="checkbox" value="Facebook" class="plat"><span></span>Facebook</label>
+<label class="check"><input type="checkbox" value="YouTube" class="plat"><span></span>Youtube</label>
+<p>Dispositivos</p>
+<label class="check"><input type="checkbox" value="Emulador" class="dev"><span></span>Emulador</label>
+<label class="check"><input type="checkbox" value="IOS" class="dev"><span></span>IOS</label>
+<label class="check"><input type="checkbox" value="Android" class="dev"><span></span>Android</label>
+<p>Você quer ser</p>
+<label class="check"><input type="checkbox" value="Vendedor" class="tipo"><span></span>Vendedor</label>
+<label class="check"><input type="checkbox" value="Divulgador" class="tipo"><span></span>Divulgador</label>
+<input id="insta" placeholder="@seuinsta">
+<button onclick="enviar()" class="sendBtn">Enviar Formulário</button>
+<p class="counter">Formulários enviados: <span id="formCounter">0</span></p>
+</div>
+</div>
+
+<!-- Painel -->
+<div id="admin" class="section">
+<input id="senha" placeholder="Senha">
+<button onclick="login()" class="sendBtn">Entrar</button>
+<div id="adminArea" style="display:none; margin-top:10px;">
+<button onclick="renderFormsPanel()" class="sendBtn">Responder Formulários</button>
+<button onclick="renderSupportPanel()" class="sendBtn">Responder Suporte</button>
+<div id="formsPanel" style="margin-top:10px;"></div>
+<div id="supportPanel" style="margin-top:10px;"></div>
+</div>
+</div>
+
+<!-- Comprar -->
+<div id="comprar" class="section">
+<a href="https://www.instagram.com/matheus_dvlr" target="_blank"><button class="sendBtn">Comprar no Instagram</button></a>
+</div>
+
+<!-- Notificações -->
+<div id="socialMenu"></div>
+
+<script>
+// Loading
+let p=0; let load=setInterval(()=>{p++;document.getElementById("percent").innerText=p+"%";document.getElementById("progress").style.width=p+"%";if(p>=100){clearInterval(load);document.getElementById("loading").style.display="none";}},40);
+
+// Abas
+function show(sec){document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));document.getElementById(sec).classList.add("active");}
+
+// Painel abas internas
+function showPanel(panelId){document.getElementById('formsPanel').style.display='none';document.getElementById('supportPanel').style.display='none';document.getElementById(panelId).style.display='block';renderFormsPanel();renderSupportPanel();}
+
+// Notificação de compra animada
+let nomes=["Lucas","Pedro","Ana","João","Carlos"];
+function newNotification(name){
+let menu=document.getElementById("socialMenu");
+let now=new Date(); let time=now.getHours()+":"+now.getMinutes().toString().padStart(2,'0');
+let notif=document.createElement("div"); notif.className="notification"; notif.innerText=name+" comprou o curso - "+time; menu.appendChild(notif);
+setTimeout(()=>{notif.classList.add("show");},100);
+setTimeout(()=>{notif.classList.remove("show"); setTimeout(()=>{notif.remove();},500);},5000);
+}
+setInterval(()=>{let n=nomes[Math.floor(Math.random()*nomes.length)]; newNotification(n);},7000);
+
+// Avaliações
+let rating=0;
+function rate(n){rating=n;document.querySelectorAll(".star").forEach((s,i)=>{s.classList.toggle("sel",i<n);});}
+let reviews=JSON.parse(localStorage.getItem("reviews"))||[];
+function addReview(){let name=document.getElementById("name").value||"Anonimo";let text=document.getElementById("comment").value||"-";reviews.push({name,text,rating});localStorage.setItem("reviews",JSON.stringify(reviews));renderReviews();alert("Avaliação enviada!");}
+function renderReviews(){let r=document.getElementById("reviews");r.innerHTML="";reviews.forEach(v=>{let d=document.createElement("div"); d.className="reviewCard"; d.innerHTML=`<b>${v.name}</b><p>${"★".repeat(v.rating)}</p><p>${v.text}</p>`; r.appendChild(d);});}
+renderReviews();
+
+// Formulário vendedor
+let forms=JSON.parse(localStorage.getItem("forms"))||[];
+function enviar(){let plats=[];document.querySelectorAll(".plat:checked").forEach(e=>plats.push(e.value));let devs=[];document.querySelectorAll(".dev:checked").forEach(e=>devs.push(e.value));let tipos=[];document.querySelectorAll(".tipo:checked").forEach(e=>tipos.push(e.value));let data={nome:document.getElementById("nomeV").value||"-",idade:document.getElementById("idade").value||"-",mod:document.getElementById("mod").value||"-",insta:document.getElementById("insta").value||"-",plataformas:plats,devices:devs,tipos:tipos,respostas:[]};forms.push(data);localStorage.setItem("forms",JSON.stringify(forms));updateCounter();alert("Olá! Obrigado! Fique de olho no seu Instagram, caso você passe enviaremos uma mensagem no seu perfil.");document.getElementById("nomeV").value="";document.getElementById("idade").value="";document.getElementById("mod").value="";document.getElementById("insta").value="";}
+function updateCounter(){document.getElementById("formCounter").innerText=forms.length;}
+updateCounter();
+
+// Suporte
+function sendSupport(){let n=document.getElementById("supname").value||"Anonimo";let m=document.getElementById("supmsg").value||"-";let u=document.getElementById("urgency").value||"medium";let sup=JSON.parse(localStorage.getItem("sup"))||[];sup.push({n,m,u,respostas:[]});localStorage.setItem("sup",JSON.stringify(sup));alert("Aguarde, algum administrador irá responder em breve.");document.getElementById("supname").value="";document.getElementById("supmsg").value="";renderSupportPanel();}
+
+// Painel
+function login(){let s=document.getElementById("senha").value;if(s=="1234"){document.getElementById("adminArea").style.display="block";renderFormsPanel();renderSupportPanel();}else{alert("Senha incorreta!");document.getElementById("adminArea").style.display="none";}}
+
+// Render Formulários
+function renderFormsPanel(){
+    let area = document.getElementById("formsPanel");
+    let supArea = document.getElementById("supportPanel");
+    supArea.style.display = "none";
+    area.style.display = "block";
+
+    let forms = JSON.parse(localStorage.getItem("forms")) || [];
+    area.innerHTML = "<h3>Responder Formulários</h3>";
+    if(forms.length==0){ area.innerHTML += "<p>Nenhum formulário enviado ainda.</p>"; return; }
+
+    forms.forEach((f,i)=>{
+        let d = document.createElement("div");
+        d.className = "formCard";
+        d.innerHTML = `
+        <b>${f.nome}</b> | Idade: ${f.idade} | Mod: ${f.mod} | Insta: ${f.insta}
+        <p>Plataformas: ${f.plataformas.join(", ")||"-"} | Dispositivo: ${f.devices.join(", ")||"-"} | Tipo: ${f.tipos.join(", ")||"-"}</p>
+        <div class="replyBox">
+            <textarea id="replyForm${i}" placeholder="Escreva sua resposta"></textarea>
+            <button onclick="replyForm(${i})" class="sendBtn">Responder</button>
+            <div id="replyListForm${i}"></div>
+        </div>`;
+        area.appendChild(d);
+
+        if(f.respostas && f.respostas.length>0){
+            f.respostas.forEach(r=>{
+                let replyDiv = document.createElement("div");
+                replyDiv.className = "replyMsg";
+                replyDiv.innerText = r;
+                document.getElementById("replyListForm"+i).appendChild(replyDiv);
+            });
+        }
+    });
+}
+
+// Responder formulário
+function replyForm(index){let text=document.getElementById("replyForm"+index).value;if(!text)return alert("Escreva a resposta!");let forms=JSON.parse(localStorage.getItem("forms"))||[];forms[index].respostas.push(text);localStorage.setItem("forms",JSON.stringify(forms));document.getElementById("replyForm"+index).value="";renderFormsPanel();}
+
+// Render Suporte
+function renderSupportPanel(){
+    let area=document.getElementById("supportPanel"); area.style.display='block';
+    let formsArea=document.getElementById("formsPanel"); formsArea.style.display='none';
+    let sup=JSON.parse(localStorage.getItem("sup"))||[];
+    area.innerHTML="<h3>Responder Suporte</h3>";
+    if(sup.length==0){area.innerHTML+="<p>Nenhuma mensagem de suporte enviada.</p>"; return;}
+    sup.forEach((m,i)=>{
+        let d=document.createElement("div");
+        d.className="supportCard "+m.u;
+        d.innerHTML=`<b>${m.n}</b><p>${m.m}</p>
+        <div class="replyBox">
+            <textarea id="replySup${i}" placeholder="Escreva sua resposta"></textarea>
+            <button onclick="replySup(${i})" class="sendBtn">Responder</button>
+            <div id="replyListSup${i}"></div>
+        </div>`;
+        area.appendChild(d);
+        if(m.respostas && m.respostas.length>0){m.respostas.forEach(r=>{let replyDiv=document.createElement("div"); replyDiv.className="replyMsg"; replyDiv.innerText=r; document.getElementById("replyListSup"+i).appendChild(replyDiv);});}
+    });
+}
+
+// Responder suporte
+function replySup(index){let text=document.getElementById("replySup"+index).value;if(!text)return alert("Escreva a resposta!");let sup=JSON.parse(localStorage.getItem("sup"))||[];sup[index].respostas.push(text);localStorage.setItem("sup",JSON.stringify(sup));document.getElementById("replySup"+index).value="";renderSupportPanel();}
+</script>
+</body>
+</html>
